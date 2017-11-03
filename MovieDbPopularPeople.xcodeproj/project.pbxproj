@@ -14,6 +14,9 @@
 		AA1E9FF11FAC7346007FF626 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA1E9FEF1FAC7346007FF626 /* LaunchScreen.storyboard */; };
 		AAC5F16E1FACAC8900A69152 /* ServerUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC5F16D1FACAC8900A69152 /* ServerUtils.swift */; };
 		AAC5F1701FACACB900A69152 /* PreferencesUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC5F16F1FACACB900A69152 /* PreferencesUtils.swift */; };
+		AAC5F1731FACBD9F00A69152 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC5F1721FACBD9F00A69152 /* Person.swift */; };
+		AAC5F1751FACBED700A69152 /* PersonDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC5F1741FACBED700A69152 /* PersonDetails.swift */; };
+		AAC5F1771FACBF4700A69152 /* ConstantUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC5F1761FACBF4700A69152 /* ConstantUtils.swift */; };
 		B1D2DA4512C38B108D198CC5 /* Pods_MovieDbPopularPeople.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA18C709EE9035AFBB5E17BC /* Pods_MovieDbPopularPeople.framework */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +31,9 @@
 		AA1E9FF21FAC7346007FF626 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AAC5F16D1FACAC8900A69152 /* ServerUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerUtils.swift; sourceTree = "<group>"; };
 		AAC5F16F1FACACB900A69152 /* PreferencesUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUtils.swift; sourceTree = "<group>"; };
+		AAC5F1721FACBD9F00A69152 /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
+		AAC5F1741FACBED700A69152 /* PersonDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersonDetails.swift; sourceTree = "<group>"; };
+		AAC5F1761FACBF4700A69152 /* ConstantUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstantUtils.swift; sourceTree = "<group>"; };
 		BA18C709EE9035AFBB5E17BC /* Pods_MovieDbPopularPeople.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MovieDbPopularPeople.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5E14AAEB69DD1486A9213FB /* Pods-MovieDbPopularPeople.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MovieDbPopularPeople.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MovieDbPopularPeople/Pods-MovieDbPopularPeople.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -72,6 +78,7 @@
 				AA1E9FEF1FAC7346007FF626 /* LaunchScreen.storyboard */,
 				AA1E9FF21FAC7346007FF626 /* Info.plist */,
 				AAC5F16A1FACABD800A69152 /* Utils */,
+				AAC5F1711FACBD4200A69152 /* API Objects */,
 			);
 			path = MovieDbPopularPeople;
 			sourceTree = "<group>";
@@ -81,8 +88,18 @@
 			children = (
 				AAC5F16D1FACAC8900A69152 /* ServerUtils.swift */,
 				AAC5F16F1FACACB900A69152 /* PreferencesUtils.swift */,
+				AAC5F1761FACBF4700A69152 /* ConstantUtils.swift */,
 			);
 			name = Utils;
+			sourceTree = "<group>";
+		};
+		AAC5F1711FACBD4200A69152 /* API Objects */ = {
+			isa = PBXGroup;
+			children = (
+				AAC5F1721FACBD9F00A69152 /* Person.swift */,
+				AAC5F1741FACBED700A69152 /* PersonDetails.swift */,
+			);
+			name = "API Objects";
 			sourceTree = "<group>";
 		};
 		B11F95A8BE85C1BACD0F8AB4 /* Frameworks */ = {
@@ -233,8 +250,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAC5F1731FACBD9F00A69152 /* Person.swift in Sources */,
+				AAC5F1771FACBF4700A69152 /* ConstantUtils.swift in Sources */,
 				AAC5F1701FACACB900A69152 /* PreferencesUtils.swift in Sources */,
 				AAC5F16E1FACAC8900A69152 /* ServerUtils.swift in Sources */,
+				AAC5F1751FACBED700A69152 /* PersonDetails.swift in Sources */,
 				AA1E9FE91FAC7346007FF626 /* ViewController.swift in Sources */,
 				AA1E9FE71FAC7346007FF626 /* AppDelegate.swift in Sources */,
 			);
