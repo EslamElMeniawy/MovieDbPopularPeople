@@ -17,19 +17,22 @@ class ViewController: UIViewController {
     @IBOutlet weak var loading: UIActivityIndicatorView!
     @IBOutlet weak var personsTable: UITableView!
     @IBOutlet weak var errorLabel: UILabel!
+    @IBOutlet weak var searchText: UITextField!
     
     // MARK: - Properities
     
     var persons = [Person]()
     var pagesCount = 0
     var page = 1
-    var isLoading = false
+    var isLoading = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.isLoading = true
-        self.persons = [Person]()
+        //
+        // Check if first run of app then get configuration first else get people list.
+        //
+        
         if (PreferencesUtils.readFromPreferences(key: PreferencesUtils.PREF_KEY_FIRST_RUN) as? Bool) ?? true {
             self.getConfiguration()
         } else {
@@ -42,11 +45,35 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - IBActions
+    
+    @IBAction func searchTextChanged(_ sender: UITextField) {
+        //
+        // Check if text is empty then load popular people else search with text.
+        //
+        
+        self.isLoading = true
+        self.persons = [Person]()
+        self.personsTable.reloadData()
+        self.page = 1
+        self.loading.startAnimating()
+        
+        if (self.searchText.text ?? "" as String).characters.count > 0 {
+            self.searchPeople(searchString: self.searchText.text!)
+        } else {
+            self.loadPeople()
+        }
+    }
+    
     // MARK: - Private methods
     
-    private func showError(error: String) {
+    /**
+     * Show error message in case of loading first page.
+     */
+    private func showError(error: String, noSearchResult: Bool) {
         if page == 1 {
             self.personsTable.isHidden = true
+            self.searchText.isHidden = !noSearchResult
             self.errorLabel.text = error
             self.errorLabel.isHidden = false
         }
@@ -55,18 +82,29 @@ class ViewController: UIViewController {
         self.isLoading = false
     }
     
+    /**
+     * Add results to table view and show it if hidden.
+     */
     private func showData(results: [[String:Any]]) {
-        for result in results {
-            self.persons.append(Person(id: result["id"] as? Int ?? 0, name: result["name"] as? String ?? "", profilePath: result["profile_path"] as? String ?? ""))
+        if results.count > 0 {
+            for result in results {
+                self.persons.append(Person(id: result["id"] as? Int ?? 0, name: result["name"] as? String ?? "", profilePath: result["profile_path"] as? String ?? ""))
+            }
+            
+            self.personsTable.reloadData()
+            self.searchText.isHidden = false
+            self.personsTable.isHidden = false
+            self.loading.stopAnimating()
+            self.page += 1
+            self.isLoading = false
+        } else {
+            self.showError(error: "No data available to view.", noSearchResult: true)
         }
-        
-        self.personsTable.reloadData()
-        self.personsTable.isHidden = false
-        self.loading.stopAnimating()
-        self.page += 1
-        self.isLoading = false
     }
     
+    /**
+     * Call configurations API and handle response based on status.
+     */
     private func getConfiguration() {
         Alamofire.request(ServerUtils.getConfigurationUrl(), method: .get)
             .validate(statusCode: 200..<300)
@@ -87,6 +125,9 @@ class ViewController: UIViewController {
         }
     }
     
+    /**
+     * Call popular people API and handle response based on status.
+     */
     func loadPeople() {
         Alamofire.request(ServerUtils.getPopularPeopleUrl(page: self.page), method: .get)
             .validate(statusCode: 200..<300)
@@ -107,21 +148,53 @@ class ViewController: UIViewController {
         }
     }
     
+    /**
+     * Call search people API and handle response based on status.
+     */
+    func searchPeople(searchString: String) {
+        Alamofire.request(ServerUtils.getSearchPeopleUrl(query: searchString.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!, page: self.page), method: .get)
+            .validate(statusCode: 200..<300)
+            .responseJSON { response in
+                switch response.result {
+                case .success:
+                    if let json = response.result.value {
+                        self.handlePeopleData(json: json)
+                    } else {
+                        self.handleJsonError(error: "Cannot get JSON from response.")
+                    }
+                    
+                    break
+                case .failure(let error):
+                    self.handleRequestError(error: error)
+                    break
+                }
+        }
+    }
+    
+    /**
+     * Handle request error and based on error code show error message.
+     */
     private func handleRequestError(error: Error) {
         print(error)
         
         if let err = error as? URLError, err.code == .notConnectedToInternet {
-            self.showError(error: "Cannot connect to server\nPlease check Internet connection")
+            self.showError(error: "Cannot connect to server\nPlease check Internet connection", noSearchResult: false)
         } else {
-            self.showError(error: "Error getting data")
+            self.showError(error: "Error getting data", noSearchResult: false)
         }
     }
     
+    /**
+     * Handle errors while parsing JSON.
+     */
     private func handleJsonError(error: String) {
         print(error)
-        self.showError(error: "Error getting data")
+        self.showError(error: "Error getting data", noSearchResult: false)
     }
     
+    /**
+     * Save configurations and load popular people or show error if configuration not available.
+     */
     private func handleConfigurationData(json: Any) {
         if let response = json as? [String:Any] {
             if let images = response["images"] as? [String:Any] {
@@ -133,22 +206,25 @@ class ViewController: UIViewController {
                 loadPeople()
             } else {
                 print("Cannot get image configuration.")
-                self.showError(error: "Error getting data")
+                self.showError(error: "Error getting data", noSearchResult: false)
             }
             
         } else {
             print("Cannot map JSON.")
-            self.showError(error: "Error getting data")
+            self.showError(error: "Error getting data", noSearchResult: false)
         }
     }
     
+    /**
+     * Handle the response of popular people API call.
+     */
     private func handlePeopleData(json: Any) {
         if let response = json as? [String:Any] {
             self.pagesCount = response["total_pages"] as? Int ?? 0
             self.showData(results: response["results"] as? [[String:Any]] ?? [[:]])
         } else {
             print("Cannot map JSON.")
-            self.showError(error: "Error getting data")
+            self.showError(error: "Error getting data", noSearchResult: false)
         }
     }
 
@@ -163,9 +239,21 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        //
+        // Create new cell of default type.
+        //
+        
         let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "CellPopular")
         
+        //
+        // Set person name as the cell label text.
+        //
+        
         cell.textLabel?.text = self.persons[indexPath.row].name
+        
+        //
+        // Load the person image and set it to the cell image view.
+        //
         
         if let sizes = PreferencesUtils.readFromPreferences(key: PreferencesUtils.PREF_KEY_PROFILE_SIZES) as? [String] {
             Alamofire.request(ServerUtils.getImageUrl(fileSize: sizes[0], filePath: persons[indexPath.row].profilePath)).responseImage { response in
@@ -180,13 +268,17 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.personsTable.deselectRow(at: indexPath, animated: true)
-    }
-    
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if scrollView == self.personsTable {
+            //
+            // Check if table reached the end.
+            //
+            
             if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height) {
+                //
+                // Check if not loading and there is still pages to load then load next page.
+                //
+                
                 if !self.isLoading && page <= pagesCount {
                     self.loading.startAnimating()
                     self.isLoading = true
@@ -194,6 +286,32 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
                 }
             }
         }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.personsTable.deselectRow(at: indexPath, animated: true)
+    }
+    
+}
+
+// MARK: - UITextFieldDelegate
+
+extension ViewController : UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        //
+        // Hide keyboard on return.
+        //
+        
+        self.searchText.resignFirstResponder()
+        return true
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        //
+        // Hide keyboard on tap outside.
+        //
+        
+        self.view.endEditing(true)
     }
     
 }

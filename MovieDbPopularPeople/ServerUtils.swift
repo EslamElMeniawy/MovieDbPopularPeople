@@ -9,8 +9,12 @@
 import UIKit
 
 struct ServerUtils {
-    static let API_URL = "https://api.themoviedb.org/3/"
-    static let API_KEY = "084f18e0d3ad3bd4f99dd98a07422acf"
+    //
+    // Base API url and API key.
+    //
+    
+    private static let API_URL = "https://api.themoviedb.org/3/"
+    private static let API_KEY = "084f18e0d3ad3bd4f99dd98a07422acf"
     
     //
     // Full API urls functions.

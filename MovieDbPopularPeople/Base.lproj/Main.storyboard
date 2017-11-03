@@ -22,13 +22,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nfg-mP-Vc0">
-                                <rect key="frame" x="187" y="333.5" width="0.0" height="0.0"/>
+                                <rect key="frame" x="187" y="334" width="0.0" height="0.0"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wsF-SL-5SM">
-                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                            <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wsF-SL-5SM">
+                                <rect key="frame" x="0.0" y="110" width="375" height="557"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="dataSource" destination="BYZ-38-t0r" id="bsV-wF-U5J"/>
@@ -39,15 +39,28 @@
                                 <rect key="frame" x="169" y="315" width="37" height="37"/>
                                 <color key="color" red="0.031372549019607843" green="0.10980392156862745" blue="0.14117647058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </activityIndicatorView>
+                            <textField hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Search popular people" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="nhy-NF-rs4">
+                                <rect key="frame" x="16" y="72" width="343" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                <connections>
+                                    <action selector="searchTextChanged:" destination="BYZ-38-t0r" eventType="editingChanged" id="ycn-m8-BHf"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="Rvh-h6-Zp6"/>
+                                </connections>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="wsF-SL-5SM" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="4Aw-da-JC9"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="wsF-SL-5SM" secondAttribute="bottom" id="5eU-Hw-TnL"/>
+                            <constraint firstAttribute="trailing" secondItem="nhy-NF-rs4" secondAttribute="trailing" constant="16" id="8LE-LR-N9G"/>
                             <constraint firstItem="nfg-mP-Vc0" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Nzo-8s-5yU"/>
-                            <constraint firstItem="wsF-SL-5SM" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="Uhu-Wl-dok"/>
+                            <constraint firstItem="nhy-NF-rs4" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="hC1-OK-ULm"/>
                             <constraint firstItem="nfg-mP-Vc0" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="na9-XP-Qgf"/>
                             <constraint firstAttribute="trailing" secondItem="wsF-SL-5SM" secondAttribute="trailing" id="sET-nd-bwI"/>
+                            <constraint firstItem="nhy-NF-rs4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="16" id="uOA-KR-itQ"/>
+                            <constraint firstItem="wsF-SL-5SM" firstAttribute="top" secondItem="nhy-NF-rs4" secondAttribute="bottom" constant="8" id="uwf-OD-3TS"/>
                             <constraint firstItem="ujC-3O-hyb" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="vSh-3l-rvO"/>
                             <constraint firstItem="ujC-3O-hyb" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="wwD-Fz-LRK"/>
                         </constraints>
@@ -57,6 +70,7 @@
                         <outlet property="errorLabel" destination="nfg-mP-Vc0" id="0ad-jM-jHF"/>
                         <outlet property="loading" destination="ujC-3O-hyb" id="vlj-Uy-wZ6"/>
                         <outlet property="personsTable" destination="wsF-SL-5SM" id="zij-fo-21I"/>
+                        <outlet property="searchText" destination="nhy-NF-rs4" id="qmq-t6-Y9U"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

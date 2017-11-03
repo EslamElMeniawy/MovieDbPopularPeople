@@ -9,6 +9,10 @@
 import UIKit
 
 struct ConstantUtils {
+    //
+    // Person gender variables.
+    //
+    
     static let GENGER_NOT_SET = 0
     static let GENGER_FEMALE = 1
     static let GENGER_MALE = 2
