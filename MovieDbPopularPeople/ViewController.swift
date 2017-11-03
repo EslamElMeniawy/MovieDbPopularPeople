@@ -22,16 +22,18 @@ class ViewController: UIViewController {
     
     var persons = [Person]()
     var pagesCount = 0
-    var currentPage = 1
+    var page = 1
     var isLoading = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.isLoading = true
+        self.persons = [Person]()
         if (PreferencesUtils.readFromPreferences(key: PreferencesUtils.PREF_KEY_FIRST_RUN) as? Bool) ?? true {
-            getConfiguration()
+            self.getConfiguration()
         } else {
-            loadPeople()
+            self.loadPeople()
         }
     }
 
@@ -43,10 +45,22 @@ class ViewController: UIViewController {
     // MARK: - Private methods
     
     private func showError(error: String) {
-        personsTable.isHidden = true
-        errorLabel.text = error
-        errorLabel.isHidden = false
-        loading.stopAnimating()
+        self.personsTable.isHidden = true
+        self.errorLabel.text = error
+        self.errorLabel.isHidden = false
+        self.loading.stopAnimating()
+    }
+    
+    private func showData(results: [[String:Any]]) {
+        print(results.count)
+        
+        for result in results {
+            self.persons.append(Person(id: result["id"] as? Int ?? 0, name: result["name"] as? String ?? "", profilePath: result["profile_path"] as? String ?? ""))
+        }
+        
+        self.personsTable.reloadData()
+        self.personsTable.isHidden = false
+        self.loading.stopAnimating()
     }
     
     private func getConfiguration() {
@@ -80,7 +94,36 @@ class ViewController: UIViewController {
         }
     }
     
-    private func loadPeople() {}
+    private func loadPeople() {
+        Alamofire.request(ServerUtils.getPopularPeopleUrl(page: self.page), method: .get)
+            .validate(statusCode: 200..<300)
+            .responseJSON { response in
+                print("Request: \(String(describing: response.request))")
+                print("Response: \(String(describing: response.response))")
+                print("Result: \(response.result)")
+                
+                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                    print("Data: \(utf8Text)")
+                }
+                
+                switch response.result {
+                case .success:
+                    print("Validation Successful")
+                    
+                    if let json = response.result.value {
+                        print("JSON: \(json)")
+                        self.handlePeopleData(json: json)
+                    } else {
+                        self.handleJsonError(error: "Cannot get JSON from response.")
+                    }
+                    
+                    break
+                case .failure(let error):
+                    self.handleRequestError(error: error)
+                    break
+                }
+        }
+    }
     
     private func handleRequestError(error: Error) {
         print(error)
@@ -109,11 +152,24 @@ class ViewController: UIViewController {
                 let _ = PreferencesUtils.writeToPreferences(key: PreferencesUtils.PREF_KEY_PROFILE_SIZES, value: images["profile_sizes"] as? [String] ?? [])
                 
                 let _ = PreferencesUtils.writeToPreferences(key: PreferencesUtils.PREF_KEY_FIRST_RUN, value: false)
+                loadPeople()
             } else {
                 print("Cannot get image configuration.")
                 self.showError(error: "Error getting data")
             }
             
+        } else {
+            print("Cannot map JSON.")
+            self.showError(error: "Error getting data")
+        }
+    }
+    
+    private func handlePeopleData(json: Any) {
+        if let response = json as? [String:Any] {
+            print("Get people success.")
+            print(response["total_pages"] as? Int as Any)
+            self.pagesCount = response["total_pages"] as? Int ?? 0
+            self.showData(results: response["results"] as? [[String:Any]] ?? [[:]])
         } else {
             print("Cannot map JSON.")
             self.showError(error: "Error getting data")
@@ -146,6 +202,8 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
                 if let image = response.result.value {
                     print("image downloaded: \(image)")
                     cell.imageView?.image = image
+                    cell.setNeedsLayout()
+                    cell.layoutIfNeeded()
                 }
             }
         }

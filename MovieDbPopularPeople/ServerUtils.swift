@@ -20,19 +20,19 @@ struct ServerUtils {
         return "\(API_URL)configuration?api_key=\(API_KEY)"
     }
     
-    static func getPopularPeopleUrl(page: String) -> String {
+    static func getPopularPeopleUrl(page: Int) -> String {
         return "\(API_URL)person/popular?api_key=\(API_KEY)&language=en-US&page=\(page)"
     }
     
-    static func getSearchPeopleUrl(query: String, page: String) -> String {
+    static func getSearchPeopleUrl(query: String, page: Int) -> String {
         return "\(API_URL)search/person?api_key=\(API_KEY)&language=en-US&query=\(query)&page=\(page)&include_adult=true"
     }
     
-    static func getPersonDetailsUrl(id: String) -> String {
+    static func getPersonDetailsUrl(id: Int) -> String {
         return "\(API_URL)person/\(id)?api_key=\(API_KEY)&language=en-US&append_to_response=images"
     }
     
     static func getImageUrl(fileSize: String, filePath: String) -> String {
-        return "\(PreferencesUtils.readFromPreferences(key: PreferencesUtils.PREF_KEY_BASE_URL))\(fileSize)\(filePath)"
+        return "\(PreferencesUtils.readFromPreferences(key: PreferencesUtils.PREF_KEY_BASE_URL) as? String ?? "")\(fileSize)\(filePath)"
     }
 }
