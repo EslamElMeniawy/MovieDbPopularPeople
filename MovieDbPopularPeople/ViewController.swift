@@ -45,15 +45,17 @@ class ViewController: UIViewController {
     // MARK: - Private methods
     
     private func showError(error: String) {
-        self.personsTable.isHidden = true
-        self.errorLabel.text = error
-        self.errorLabel.isHidden = false
+        if page == 1 {
+            self.personsTable.isHidden = true
+            self.errorLabel.text = error
+            self.errorLabel.isHidden = false
+        }
+        
         self.loading.stopAnimating()
+        self.isLoading = false
     }
     
     private func showData(results: [[String:Any]]) {
-        print(results.count)
-        
         for result in results {
             self.persons.append(Person(id: result["id"] as? Int ?? 0, name: result["name"] as? String ?? "", profilePath: result["profile_path"] as? String ?? ""))
         }
@@ -61,26 +63,17 @@ class ViewController: UIViewController {
         self.personsTable.reloadData()
         self.personsTable.isHidden = false
         self.loading.stopAnimating()
+        self.page += 1
+        self.isLoading = false
     }
     
     private func getConfiguration() {
         Alamofire.request(ServerUtils.getConfigurationUrl(), method: .get)
             .validate(statusCode: 200..<300)
             .responseJSON { response in
-                print("Request: \(String(describing: response.request))")
-                print("Response: \(String(describing: response.response))")
-                print("Result: \(response.result)")
-                
-                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                    print("Data: \(utf8Text)")
-                }
-                
                 switch response.result {
                 case .success:
-                    print("Validation Successful")
-                    
                     if let json = response.result.value {
-                        print("JSON: \(json)")
                         self.handleConfigurationData(json: json)
                     } else {
                         self.handleJsonError(error: "Cannot get JSON from response.")
@@ -94,24 +87,13 @@ class ViewController: UIViewController {
         }
     }
     
-    private func loadPeople() {
+    func loadPeople() {
         Alamofire.request(ServerUtils.getPopularPeopleUrl(page: self.page), method: .get)
             .validate(statusCode: 200..<300)
             .responseJSON { response in
-                print("Request: \(String(describing: response.request))")
-                print("Response: \(String(describing: response.response))")
-                print("Result: \(response.result)")
-                
-                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                    print("Data: \(utf8Text)")
-                }
-                
                 switch response.result {
                 case .success:
-                    print("Validation Successful")
-                    
                     if let json = response.result.value {
-                        print("JSON: \(json)")
                         self.handlePeopleData(json: json)
                     } else {
                         self.handleJsonError(error: "Cannot get JSON from response.")
@@ -143,10 +125,6 @@ class ViewController: UIViewController {
     private func handleConfigurationData(json: Any) {
         if let response = json as? [String:Any] {
             if let images = response["images"] as? [String:Any] {
-                print("Get configuration success.")
-                print(images["secure_base_url"] as? String as Any)
-                print(images["profile_sizes"] as? [String] as Any)
-                
                 let _ = PreferencesUtils.writeToPreferences(key: PreferencesUtils.PREF_KEY_BASE_URL, value: images["secure_base_url"] as? String ?? "")
                 
                 let _ = PreferencesUtils.writeToPreferences(key: PreferencesUtils.PREF_KEY_PROFILE_SIZES, value: images["profile_sizes"] as? [String] ?? [])
@@ -166,8 +144,6 @@ class ViewController: UIViewController {
     
     private func handlePeopleData(json: Any) {
         if let response = json as? [String:Any] {
-            print("Get people success.")
-            print(response["total_pages"] as? Int as Any)
             self.pagesCount = response["total_pages"] as? Int ?? 0
             self.showData(results: response["results"] as? [[String:Any]] ?? [[:]])
         } else {
@@ -193,14 +169,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         
         if let sizes = PreferencesUtils.readFromPreferences(key: PreferencesUtils.PREF_KEY_PROFILE_SIZES) as? [String] {
             Alamofire.request(ServerUtils.getImageUrl(fileSize: sizes[0], filePath: persons[indexPath.row].profilePath)).responseImage { response in
-                debugPrint(response)
-                
-                print(response.request as Any)
-                print(response.response as Any)
-                debugPrint(response.result)
-                
                 if let image = response.result.value {
-                    print("image downloaded: \(image)")
                     cell.imageView?.image = image
                     cell.setNeedsLayout()
                     cell.layoutIfNeeded()
@@ -213,6 +182,18 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.personsTable.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if scrollView == self.personsTable {
+            if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height) {
+                if !self.isLoading && page <= pagesCount {
+                    self.loading.startAnimating()
+                    self.isLoading = true
+                    self.loadPeople()
+                }
+            }
+        }
     }
     
 }
