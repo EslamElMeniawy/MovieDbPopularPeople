@@ -10,7 +10,7 @@ import UIKit
 import Alamofire
 import AlamofireImage
 
-class ViewController: UIViewController {
+class MainViewController: UIViewController {
     
     // MARK: - IBOutlets
     
@@ -43,6 +43,32 @@ class ViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - Navigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        
+        switch(segue.identifier ?? "") {
+        case "ShowDetail":
+            guard let detailViewController = segue.destination as? DetailsViewController else {
+                fatalError("Unexpected destination: \(segue.destination)")
+            }
+            
+            guard let selectedCell = sender as? PeopleTableViewCell else {
+                fatalError("Unexpected sender: \(sender)")
+            }
+            
+            guard let indexPath = self.personsTable.indexPath(for: selectedCell) else {
+                fatalError("The selected cell is not being displayed by the table")
+            }
+            
+            let selectedPerson = self.persons[indexPath.row]
+            detailViewController.id = selectedPerson.id
+        default:
+            fatalError("Unexpected Segue Identifier; \(segue.identifier)")
+        }
     }
     
     // MARK: - IBActions
@@ -232,7 +258,7 @@ class ViewController: UIViewController {
 
 // MARK: - TableView data source and delegate
 
-extension ViewController: UITableViewDataSource, UITableViewDelegate {
+extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.persons.count
@@ -240,16 +266,18 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //
-        // Create new cell of default type.
+        // Get cell of PeopleTableViewCell type.
         //
         
-        let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "CellPopular")
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CellPopular", for: indexPath) as? PeopleTableViewCell  else {
+            fatalError("The dequeued cell is not an instance of PeopleTableViewCell.")
+        }
         
         //
         // Set person name as the cell label text.
         //
         
-        cell.textLabel?.text = self.persons[indexPath.row].name
+        cell.name.text = self.persons[indexPath.row].name
         
         //
         // Load the person image and set it to the cell image view.
@@ -258,7 +286,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         if let sizes = PreferencesUtils.readFromPreferences(key: PreferencesUtils.PREF_KEY_PROFILE_SIZES) as? [String] {
             Alamofire.request(ServerUtils.getImageUrl(fileSize: sizes[0], filePath: persons[indexPath.row].profilePath)).responseImage { response in
                 if let image = response.result.value {
-                    cell.imageView?.image = image
+                    cell.profileImage.image = image
                     cell.setNeedsLayout()
                     cell.layoutIfNeeded()
                 }
@@ -296,7 +324,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
 // MARK: - UITextFieldDelegate
 
-extension ViewController : UITextFieldDelegate {
+extension MainViewController : UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         //
         // Hide keyboard on return.
