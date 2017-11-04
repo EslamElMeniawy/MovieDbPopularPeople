@@ -23,6 +23,7 @@
 		AAC5F1841FADE03D00A69152 /* ImagesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC5F1831FADE03D00A69152 /* ImagesTableViewCell.swift */; };
 		AAC5F1861FADE05900A69152 /* InfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC5F1851FADE05900A69152 /* InfoTableViewCell.swift */; };
 		AAC5F1881FADE1D500A69152 /* ProfileImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC5F1871FADE1D500A69152 /* ProfileImageCollectionViewCell.swift */; };
+		AAC5F18A1FAE0A9C00A69152 /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC5F1891FAE0A9C00A69152 /* ImageViewController.swift */; };
 		B1D2DA4512C38B108D198CC5 /* Pods_MovieDbPopularPeople.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA18C709EE9035AFBB5E17BC /* Pods_MovieDbPopularPeople.framework */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +47,7 @@
 		AAC5F1831FADE03D00A69152 /* ImagesTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagesTableViewCell.swift; sourceTree = "<group>"; };
 		AAC5F1851FADE05900A69152 /* InfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoTableViewCell.swift; sourceTree = "<group>"; };
 		AAC5F1871FADE1D500A69152 /* ProfileImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileImageCollectionViewCell.swift; sourceTree = "<group>"; };
+		AAC5F1891FAE0A9C00A69152 /* ImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		BA18C709EE9035AFBB5E17BC /* Pods_MovieDbPopularPeople.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MovieDbPopularPeople.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5E14AAEB69DD1486A9213FB /* Pods-MovieDbPopularPeople.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MovieDbPopularPeople.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MovieDbPopularPeople/Pods-MovieDbPopularPeople.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -132,6 +134,7 @@
 			children = (
 				AA1E9FE81FAC7346007FF626 /* MainViewController.swift */,
 				AAC5F17F1FADCF3000A69152 /* DetailsViewController.swift */,
+				AAC5F1891FAE0A9C00A69152 /* ImageViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -294,6 +297,7 @@
 				AAC5F1841FADE03D00A69152 /* ImagesTableViewCell.swift in Sources */,
 				AAC5F1751FACBED700A69152 /* PersonDetails.swift in Sources */,
 				AAC5F1881FADE1D500A69152 /* ProfileImageCollectionViewCell.swift in Sources */,
+				AAC5F18A1FAE0A9C00A69152 /* ImageViewController.swift in Sources */,
 				AAC5F1861FADE05900A69152 /* InfoTableViewCell.swift in Sources */,
 				AA1E9FE91FAC7346007FF626 /* MainViewController.swift in Sources */,
 				AA1E9FE71FAC7346007FF626 /* AppDelegate.swift in Sources */,

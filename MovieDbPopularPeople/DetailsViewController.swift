@@ -26,6 +26,7 @@ class DetailsViewController: UIViewController {
     
     var infoList = [[String:String]]()
     var images = [String]()
+    var imagesCollection: UICollectionView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,16 +52,31 @@ class DetailsViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        super.prepare(for: segue, sender: sender)
+        
+        switch(segue.identifier ?? "") {
+        case "ShowImage":
+            guard let imageViewController = segue.destination as? ImageViewController else {
+                fatalError("Unexpected destination: \(segue.destination)")
+            }
+            
+            guard let selectedCell = sender as? ProfileImageCollectionViewCell else {
+                fatalError("Unexpected sender: \(sender)")
+            }
+            
+            guard let indexPath = self.imagesCollection.indexPath(for: selectedCell) else {
+                fatalError("The selected cell is not being displayed by the table")
+            }
+            
+            let selectedImage = self.images[indexPath.row]
+            imageViewController.filePath = selectedImage
+        default:
+            fatalError("Unexpected Segue Identifier; \(segue.identifier)")
+        }
     }
-    */
     
     // MARK: - Private methods
     
@@ -254,6 +270,7 @@ extension DetailsViewController: UITableViewDataSource {
             cell.profileImagesCollection.dataSource = self
             cell.profileImagesCollection.delegate = self
             cell.profileImagesCollection.reloadData()
+            self.imagesCollection = cell.profileImagesCollection
             return cell
         default:
             //
@@ -275,6 +292,8 @@ extension DetailsViewController: UITableViewDataSource {
     }
     
 }
+
+// MARK: - CollectionView data source and delegate
 
 extension DetailsViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     
